@@ -49,7 +49,7 @@ file.
  {:group-id wing
   :github   "teknql/wing"
   :projects
-    {core      {:desc   "Extensions to the standard library"
+  {core      {:desc   "Extensions to the standard library"
               :target :jar
               :deps   [org.clojure/core.match
                        slingshot
