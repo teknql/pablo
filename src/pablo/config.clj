@@ -22,9 +22,9 @@
   ([deps-edn] (qualified-symbol deps-edn {}))
   ([deps-edn {:keys [artifact-id group-id]}]
    (let [cfg (config deps-edn)]
-     (-> (str (:or group-id (:group-id cfg))
+     (-> (str (or group-id (:group-id cfg))
               "/"
-              (:or artifact-id (:artifact-id cfg)))
+              (or artifact-id (:artifact-id cfg)))
          (symbol)))))
 
 
