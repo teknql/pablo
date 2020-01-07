@@ -38,4 +38,12 @@
         (is (= #{(str path "/src/sample/core.clj")
                  (str path "/test/sample/core.clj")
                  (str path "/test/sample/core")}
-               (sut/project-files base-deps 'core)))))))
+               (sut/project-files base-deps 'core)))))
+
+    (testing "auto-resolution for hyphenated project symbol"
+      (with-temp-dir
+        [path ["/src/my_project/core.clj"]]
+        (is (= #{(str path "/src/my_project/core.clj")}
+               (sut/project-files
+                (assoc-in base-deps [:pablo/config :group-id] 'my-project)
+                'core)))))))

@@ -5,7 +5,8 @@
             [clojure.java.io :as io]
             [pablo.utils :as utils]
             [pablo.config :as cfg]
-            [pablo.pom :as pom]))
+            [pablo.pom :as pom]
+            [clojure.string :as string]))
 
 (defn projects
   "Returns a list of project symbols for the provided mono-repo"
@@ -22,8 +23,9 @@
         project-cfg (some-> cfg :projects project-sym)]
     (if-some [explicit-files (:files project-cfg)]
       explicit-files
-      (let [group-id   (or (:group-id project-cfg)
-                           (:group-id cfg))
+      (let [group-id   (-> (or (:group-id project-cfg)
+                               (:group-id cfg))
+                          (string/replace "-" "_"))
             auto-paths (->> (for [path   (:paths deps-edn)
                                   suffix [".clj" "/"]]
                               (utils/path-join fs/*cwd* path group-id (str project-sym suffix)))
