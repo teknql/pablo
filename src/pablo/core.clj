@@ -16,7 +16,7 @@
     (-> "deps.edn" fs/file slurp read-string)))
 
 (defn- default-opts
-  "Extens opts with some defaults"
+  "Extends opts with some defaults"
   [opts]
   (-> opts
       (update :version (fnil identity (version/from-git)))
@@ -25,7 +25,7 @@
 (defn- run-on-projects
   "Higher order function which calls `f` with a project symbol and its
   `deps.edn` for each project. In a normal repo, runs on the root. For a mono-repo
-  uses the project option, or runs on all projects if its `nil`."
+  uses the `:project` option, or runs on all projects if it's `nil`."
   [opts tgt-keyword f]
   (let [deps-edn (read-deps-edn)
         opts     (default-opts opts)]
@@ -77,7 +77,7 @@
   "Installs a JAR library.
 
   Takes the following options:
-  `:project` - the project selector for a mono-repo. If not set runs on all projects.
+  `:project` - the project selector for a mono-repo. If not set, runs on all projects.
   `:target-dir` - The target directory to source things from.
   `:jar-path` - explicit path to a JAR. Otherwise computed via artifact ID, group ID, and version
   `:version` - explicit version override, otherwise set via git tags
@@ -131,7 +131,7 @@
 (defn publish!
   "Publishes a build artifact to a maven repository.
 
-  Takes the followiong options:
+  Takes the following options:
 
   `:project` - the project to publish (if a monorepo)
   `:target-dir` - The target directory to source things from.
