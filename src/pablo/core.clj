@@ -3,9 +3,10 @@
   (:require [pablo.version :as version]
             [pathetic.core :as path]
             [pablo.mono :as mono]
-            [pablo.config :as cfg]
+            [pablo.config :as config]
             [badigeon.jar]
             [badigeon.deploy]
+            [badigeon.install]
             [me.raynes.fs :as fs]
             [pablo.pom :as pom]
             [pablo.utils :as utils]))
@@ -124,7 +125,7 @@
        nil
        (fn [deps-edn opts]
          (let [qualified-sym (config/qualified-symbol deps-edn)
-               artifact-id   (:artifact-id (cfg/config deps-edn))]
+               artifact-id   (:artifact-id (config/config deps-edn))]
            (println "Extracting project" qualified-sym)
            (mono/extract-project! root-deps-edn artifact-id opts)))))))
 
