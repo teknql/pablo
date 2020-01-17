@@ -25,9 +25,9 @@
       explicit-files
       (let [group-id   (-> (or (:group-id project-cfg)
                                (:group-id cfg))
-                          (string/replace "-" "_"))
+                           (string/replace "-" "_"))
             auto-paths (->> (for [path   (:paths deps-edn)
-                                  suffix [".clj" "/"]]
+                                  suffix [".clj" ".cljs" ".cljc" "/"]]
                               (utils/path-join fs/*cwd* path group-id (str project-sym suffix)))
                             (into #{}))]
         (->> auto-paths
