@@ -100,14 +100,14 @@
                                (fs/file)
                                (str))
              pom-file      (if (fs/exists? "pom.xml")
-                             "pom.xml"
+                             (fs/file "pom.xml")
                              (let [temp-file (fs/temp-file "pom")]
                                (spit temp-file (pom/pom deps-edn opts))
-                               (str temp-file)))]
+                               (fs/file temp-file)))]
          (println "Installing" qualified-sym)
          (badigeon.install/install qualified-sym {:mvn/version (:version opts)}
                                    jar-path
-                                   (str pom-file)))))))
+                                   pom-file))))))
 
 
 (defn extract!
