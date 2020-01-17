@@ -27,27 +27,30 @@
   "Higher order function which calls `f` with a project symbol and its
   `deps.edn` for each project. In a normal repo, runs on the root. For a mono-repo
   uses the `:project` option, or runs on all projects if it's `nil`."
-  [opts tgt-keyword f]
-  (let [deps-edn (read-deps-edn)
-        opts     (default-opts opts)]
+  [{:keys [target skip-cwd]} opts f]
+  (let [deps-edn       (read-deps-edn)
+        opts           (default-opts opts)
+        run-on-project #(let [project-deps-edn (mono/project-deps deps-edn % opts)]
+                          (if (config/targets? project-deps-edn target)
+                            (if skip-cwd
+                              (f project-deps-edn opts)
+                              (utils/with-cwd (path/resolve (:target-dir opts) (str %))
+                                (f project-deps-edn (merge opts {:target-dir "../"}))))
+                            (println (format "Skipping non-%s project %s"
+                                             (name target)
+                                             (config/qualified-symbol deps-edn)))))]
     (when-not deps-edn
       (throw (ex-info "Could not find deps.edn" {:type :missing-deps})))
 
     (cond
-      (and (config/monorepo? deps-edn) (:project opts))
-      (f (mono/project-deps deps-edn (:project opts) opts) opts)
-      (config/monorepo? deps-edn)
-      (doseq [project (mono/projects deps-edn)]
-        (let [project-deps-edn (mono/project-deps deps-edn project opts)]
-          (if (config/targets? project-deps-edn tgt-keyword)
-            (f project-deps-edn opts)
-            (println (format "Skipping non-%s project %s"
-                             (name tgt-keyword)
-                             (config/qualified-symbol deps-edn))))))
-      (config/targets? deps-edn tgt-keyword) (f deps-edn opts)
-      :else                                  (println (format "Skipping non-%s project %s"
-                                                              (name tgt-keyword)
-                                                              (config/qualified-symbol deps-edn))))))
+      (and (config/monorepo? deps-edn) (:project opts)) (run-on-project (:project opts))
+      (config/monorepo? deps-edn)                       (doseq [project (mono/projects deps-edn)]
+                                                          (run-on-project project))
+      (config/targets? deps-edn target)                 (f deps-edn opts)
+      :else                                             (println
+                                                          (format "Skipping non-%s project %s"
+                                                                  (name target)
+                                                                  (config/qualified-symbol deps-edn))))))
 
 (defn jar!
   "Builds a JAR library.
@@ -61,8 +64,8 @@
   ([] (jar! {}))
   ([opts]
    (run-on-projects
+     {:target :jar}
      opts
-     :jar
      (fn [deps-edn opts]
        (let [qualified-sym (config/qualified-symbol deps-edn opts)
              jar-name      (config/jar-name deps-edn opts)]
@@ -88,8 +91,8 @@
   ([] (install! {}))
   ([opts]
    (run-on-projects
+     {:target :jar}
      opts
-     :jar
      (fn [deps-edn opts]
        (let [qualified-sym (config/qualified-symbol deps-edn opts)
              jar-path      (-> (or (:jar-path opts)
@@ -121,8 +124,8 @@
   ([opts]
    (let [root-deps-edn (read-deps-edn)]
      (run-on-projects
+       {:skip-cwd true}
        opts
-       nil
        (fn [deps-edn opts]
          (let [qualified-sym (config/qualified-symbol deps-edn)
                artifact-id   (:artifact-id (config/config deps-edn))]
@@ -144,8 +147,8 @@
   ([] (publish! {}))
   ([opts]
    (run-on-projects
+     {:target :jar}
      opts
-     :jar
      (fn [deps-edn opts]
        (let [qualified-sym (config/qualified-symbol deps-edn)
              pom-file      (let [temp-file (fs/temp-file "pom")]
