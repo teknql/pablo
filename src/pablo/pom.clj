@@ -66,11 +66,12 @@
             ["url" "https://clojars.org/repo"]]]
           (when-some [github-path (:github cfg)]
             (apply vector "scm"
-                   (let [url (str "git@github.com:" github-path ".git")
-                         scm (str "scm:git:" url)]
-                     [["connection" scm]
-                      ["developerConnection" scm]
-                      ["url" url]
+                   (let [http-url     (str "https://github.com/" github-path)
+                         conn-url     (str "scm:git:git://github.com/" github-path ".git")
+                         dev-conn-url (str "scm:git:ssh://git@github.com/" github-path ".git")]
+                     [["url" http-url]
+                      ["connection" conn-url]
+                      ["developerConnection" dev-conn-url]
                       ["tag" "HEAD"]])))]
          (hiccup.core/html)
          (pp-xml))))
