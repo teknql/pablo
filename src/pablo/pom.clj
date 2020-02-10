@@ -72,6 +72,6 @@
                      [["url" http-url]
                       ["connection" conn-url]
                       ["developerConnection" dev-conn-url]
-                      ["tag" "HEAD"]])))]
+                      ["tag" (version/last-commit-sha)]])))]
          (hiccup.core/html)
          (pp-xml))))
