@@ -5,6 +5,7 @@
             [pablo.mono :as mono]
             [pablo.config :as config]
             [badigeon.jar]
+            [badigeon.sign]
             [badigeon.deploy]
             [badigeon.install]
             [me.raynes.fs :as fs]
@@ -157,13 +158,17 @@
              jar-path      (-> (or (:jar-path opts)
                                    (path/resolve (:target-dir opts) (config/jar-name deps-edn opts)))
                                (fs/file)
-                               (str))]
+                               (str))
+             artifacts     [{:file-path pom-file :extension "pom"}
+                            {:file-path jar-path :extension "jar"}]
+             version       (:version opts)
+             snapshot?     (re-find #"SNAPSHOT$" version)]
          (println "Publishing project" qualified-sym)
-         (println jar-path)
          (badigeon.deploy/deploy qualified-sym
-                                 (:version opts)
-                                 [{:file-path pom-file :extension "pom"}
-                                  {:file-path jar-path :extension "jar"}]
+                                 version
+                                 (if snapshot?
+                                   artifacts
+                                   (badigeon.sign/sign artifacts))
                                  {:id  "clojars"
                                   :url "https://clojars.org/repo"}
                                  opts))))))
