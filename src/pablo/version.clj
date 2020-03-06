@@ -22,8 +22,9 @@
   []
   (git/with-repo (fs/file ".")
     (let [tags   (git/git-tag-list repo)
-          dirty? (some? (->> (git/git-status repo)
-                             (keep not-empty)))]
+          dirty? (seq (->> (git/git-status repo)
+                           vals
+                           (keep not-empty)))]
       (from-tags tags dirty?))))
 
 (defn last-commit-sha
