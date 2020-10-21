@@ -22,6 +22,7 @@
   [opts]
   (-> opts
       (update :version (fnil identity (version/from-git)))
+      (update :sha (fnil identity (version/last-commit-sha)))
       (update :target-dir (fnil (comp str fs/absolute) "target/"))))
 
 (defn- run-on-projects

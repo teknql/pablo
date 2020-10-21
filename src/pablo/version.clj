@@ -20,24 +20,28 @@
 (defn from-git
   "Scans the git repo to determine the version of the project"
   []
-  (git/with-repo (fs/file ".")
-    (let [tags   (git/git-tag-list repo)
-          dirty? (seq (->> (git/git-status repo)
-                           vals
-                           (keep not-empty)))]
-      (from-tags tags dirty?))))
+  (try
+    (git/with-repo (fs/file ".")
+      (let [tags   (git/git-tag-list repo)
+            dirty? (seq (->> (git/git-status repo)
+                             vals
+                             (keep not-empty)))]
+        (from-tags tags dirty?)))
+    (catch java.io.FileNotFoundException _
+      nil)))
 
 (defn last-commit-sha
   "Return a string of the last commit sha of the project"
   []
-  (git/with-repo (fs/file ".")
-    (->> (git/git-log repo)
-         first
-         :id
-         (git.query/commit-info repo)
-         :id)))
+  (try
+    (git/with-repo (fs/file ".")
+      (->> (git/git-log repo)
+           first
+           :id
+           (git.query/commit-info repo)
+           :id))
+    (catch java.io.FileNotFoundException _
+      nil)))
 
 (comment
-  (from-git)
-
   (last-commit-sha))
