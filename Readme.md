@@ -63,3 +63,22 @@ file.
               :deps       [integrant/repl]
               :local-deps [integrant]}}}}
 ```
+
+## Usage Examples
+
+To see an example project that uses pablo, check out [teknql/wing](https://github.com/teknql/wing),
+which uses pablo to publish several smaller libraries that are part of a single repository.
+
+```clj
+(require '[pablo.core :as pablo])
+(require '[pablo.utils])
+
+(pablo.utils/with-cwd "/path/to/your/project-root"
+  (let [opts {:credentials {:username "YOUR_CLOJARS_USERNAME"
+                            :password "YOUR_CLOJARS_DEPLOY_TOKEN"}
+              :version     "0.1.0"}]
+    (pablo/extract! opts)   ;; ONLY for mono repos, extracts out sub projects to project-root/target.
+    (pablo/jar! opts)       ;; Make JAR file(s), will be in project-root/target
+    (pablo/install! opts)   ;; Install made jar file(s) to your local ~/.m2 repo
+    (pablo/publish! opts))) ;; Publish the jar file(s) to your clojars
+```
