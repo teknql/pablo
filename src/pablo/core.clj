@@ -5,7 +5,9 @@
             [pablo.mono :as mono]
             [pablo.config :as config]
             [badigeon.jar]
+            [badigeon.uberjar]
             [badigeon.sign]
+            [badigeon.bundle]
             [badigeon.deploy]
             [badigeon.install]
             [me.raynes.fs :as fs]
@@ -78,6 +80,23 @@
                             :paths                   (:paths deps-edn)
                             :allow-all-dependencies? true}))))))
 
+(defn uberjar!
+  "Builds an Uberjar"
+  ([] (uberjar! {}))
+  ([opts]
+   (run-on-projects
+     {:target :uberjar}
+     opts
+     (fn [deps-edn opts]
+       (let [qualified-sym (config/qualified-symbol deps-edn opts)
+             jar-name      (config/jar-name deps-edn opts)]
+         (println "Building UberJAR for" qualified-sym)
+         (badigeon.bundle/bundle
+           (path/resolve (:target-dir opts) jar-name)
+           {:out-path            (path/resolve (:target-dir opts) jar-name)
+            :deps                (map pom/git-dep->jit-pack (:deps deps-edn))
+            :paths               (:paths deps-edn)
+            :allow-unstable-deps true}))))))
 
 (defn install!
   "Installs a JAR library.
@@ -177,8 +196,10 @@
 
 (comment
   (utils/with-cwd "/home/ryan/dev/teknql/wing"
-    (let [opts {:project     'core
-                :credentials {}}]
+    (let [opts {:credentials {:username ""
+                              :password ""}
+                :version     "0.1.5"}]
       (extract! opts)
       (jar! opts)
+      (install! opts)
       (publish! opts))))

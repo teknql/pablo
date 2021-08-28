@@ -13,11 +13,12 @@
    {org.clojure/test.check {:mvn/version "0.10.0"}
     lambdaisland/kaocha    {:mvn/version "0.0-541"}}}}
  :deps
- {cli-matic         {:mvn/version "0.3.11"}
-  clj-jgit          {:mvn/version "1.0.0-beta3"}
-  hiccup            {:mvn/version "1.0.5"}
-  badigeon/badigeon {:git/url "https://github.com/EwenG/badigeon.git"
-                     :sha     "f4bcca58536f49c10a5ea87b662f33ccf83338ce"
-                     :tag     "0.0.10"}
-  clj-commons/fs    {:mvn/version "1.5.0"}
-  pathetic          {:mvn/version "0.5.1"}}}
+ {cli-matic                   {:mvn/version "0.3.11"}
+  clj-jgit                    {:mvn/version "1.0.0-beta3"}
+  hiccup                      {:mvn/version "1.0.5"}
+  badigeon/badigeon           {:git/url "https://github.com/EwenG/badigeon.git"
+                               :sha     "f4bcca58536f49c10a5ea87b662f33ccf83338ce"
+                               :tag     "0.0.10"}
+  clj-commons/fs              {:mvn/version "1.5.0"}
+  org.clojure/tools.namespace {:mvn/version "1.0.0"}
+  pathetic                    {:mvn/version "0.5.1"}}}
